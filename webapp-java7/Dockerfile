@@ -22,6 +22,7 @@ RUN apt-get update && \
     mc \
     ca-certificates \
     curl \
+    locales \
     software-properties-common \
     python-software-properties \
     bash-completion && \
@@ -31,12 +32,12 @@ RUN apt-get update && \
     useradd -u 1000 -G users,sudo -d /home/user --shell /bin/bash -m user && \
     usermod -p "*" user && \
     add-apt-repository ppa:git-core/ppa && \
-    add-apt-repository ppa:webupd8team/java \
+    #add-apt-repository ppa:webupd8team/java \
     apt-get update && \
     sudo apt-get install git subversion -y && \
     apt-get clean && \
     apt-get -y autoremove && \
-    apt-get install oracle-java7-installer \
+    #apt-get install oracle-java7-installer \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "#! /bin/bash\n set -e\n sudo /usr/sbin/sshd -D &\n exec \"\$@\"" > /home/user/entrypoint.sh && chmod a+x /home/user/entrypoint.sh
