@@ -10,7 +10,13 @@
 FROM ubuntu:16.04
 
 ENV JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-ENV PATH=$JAVA_HOME/bin:$PATH
+
+ENV MAVEN_VERSION=3.1.1
+ENV M2_HOME=/home/user/apache-maven-$MAVEN_VERSION
+
+ENV TOMCAT_HOME=/home/user/tomcat7
+
+ENV PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
 
 RUN apt-get update && \
     apt-get -y install \
@@ -52,7 +58,16 @@ RUN sudo locale-gen en_US.UTF-8 && \
     sed -i 's/# store-passwords = no/store-passwords = yes/g' /home/user/.subversion/servers && \
     sed -i 's/# store-plaintext-passwords = no/store-plaintext-passwords = yes/g' /home/user/.subversion/servers
 
-EXPOSE 22 4403
+EXPOSE 22 4403 8000 8080 9876
+
+LABEL che:server:8080:ref=tomcat7 che:server:8080:protocol=http che:server:8000:ref=tomcat7-debug che:server:8000:protocol=http che:server:9876:ref=codeserver che:server:9876:protocol=http
+
+RUN mkdir /home/user/tomcat7 && \
+    mkdir /home/user/apache-maven-$MAVEN_VERSION && \
+    wget -qO- "http://apache.ip-connect.vn.ua/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz" | tar -zx --strip-components=1 -C /home/user/apache-maven-$MAVEN_VERSION/ && \
+    wget -qO- "http://apache.mirrors.ovh.net/ftp.apache.org/dist/tomcat/tomcat-7/v7.0.78/bin/apache-tomcat-7.0.78.tar.gz" | tar -zx --strip-components=1 -C /home/user/tomcat7 && \
+    rm -rf /home/user/tomcat8/webapps/* && \
+    echo "export MAVEN_OPTS=\$JAVA_OPTS" >> /home/user/.bashrc
 
 WORKDIR /projects
 
