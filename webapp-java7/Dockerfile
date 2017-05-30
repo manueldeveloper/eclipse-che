@@ -1,6 +1,6 @@
 # Dockerfile which defines the technological stack for webapp based on Java 7.
 # The stack is built with the following tools:
-# 	- Java 1.7.0.80 (7u80)
+# 	- Java 1.7 (OpenJDK)
 # 	- Maven 3.1.1
 #	- Tomcat 7.0.78
 #
@@ -9,7 +9,7 @@
 
 FROM ubuntu:16.04
 
-ENV JAVA_HOME=/usr/lib/jvm/java-7-oracle
+ENV JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 RUN apt-get update && \
@@ -31,13 +31,13 @@ RUN apt-get update && \
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     useradd -u 1000 -G users,sudo -d /home/user --shell /bin/bash -m user && \
     usermod -p "*" user && \
-    add-apt-repository ppa:git-core/ppa && \
-    #add-apt-repository ppa:webupd8team/java \
+    add-apt-repository -y ppa:git-core/ppa && \
+    add-apt-repository -y ppa:openjdk-r/ppa && \
     apt-get update && \
     sudo apt-get install git subversion -y && \
     apt-get clean && \
     apt-get -y autoremove && \
-    #apt-get install oracle-java7-installer \
+    apt-get install -y openjdk-7-jdk && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "#! /bin/bash\n set -e\n sudo /usr/sbin/sshd -D &\n exec \"\$@\"" > /home/user/entrypoint.sh && chmod a+x /home/user/entrypoint.sh
